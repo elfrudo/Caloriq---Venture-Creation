@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme colors as RGB triplets: change these to re-skin the whole app */
+:root {
+  --bg: 250 249 246; --fg: 34 40 38; --card: 255 255 255; --muted: 107 114 110; --border: 230 228 222;
+  --primary: 46 139 87; --secondary: 232 133 58;
+}
+body { @apply bg-bg text-fg antialiased; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.input { @apply w-full rounded-xl border border-border bg-card px-3 py-2.5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20; }
+.btn { @apply inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 font-medium text-white transition hover:opacity-90 disabled:opacity-50; }
+.btn-ghost { @apply inline-flex items-center justify-center rounded-xl border border-border bg-card px-5 py-2.5 font-medium hover:bg-bg; }
+.card { @apply rounded-2xl border border-border bg-card p-5 shadow-sm; }

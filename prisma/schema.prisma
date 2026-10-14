@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  passwordHash String
+  role String @default("USER") // USER | ADMIN
+  plan String @default("FREE") // FREE | PREMIUM (mock)
+  createdAt DateTime @default(now())
+  profile UserProfile?
+  mealPlans MealPlan[]
+  foodLogs FoodLog[]
+  weightLogs WeightLog[]
+}
+
+model UserProfile {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age Int
+  sex String // MALE | FEMALE
+  heightCm Float
+  weightKg Float
+  startWeightKg Float
+  activityLevel String
+  goal String // LOSE | MAINTAIN | GAIN
+  targetWeightKg Float?
+  dailyBudget Int
+  mealsPerDay Int @default(4)
+  dislikes String @default("")
+  allergies String @default("")
+  vegetarian Boolean @default(false)
+  bmr Int
+  tdee Int
+  calorieTarget Int
+  proteinG Int
+  carbsG Int
+  fatG Int
+}
+
+model Food {
+  id String @id @default(cuid())
+  name String @unique
+  category String // PROTEIN | CARB | VEGETABLE | FRUIT | OTHER
+  servingSize String
+  servingGrams Float
+  calories Float
+  protein Float
+  carbs Float
+  fat Float
+  estimatedPrice Int // IDR per serving (estimate)
+  vegetarian Boolean @default(false)
+  allergens String @default("") // egg,dairy,peanut,seafood,gluten,soy
+  mealItems MealItem[]
+}
+
+model MealPlan {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  days MealPlanDay[]
+}
+
+model MealPlanDay {
+  id String @id @default(cuid())
+  planId String
+  plan MealPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  date DateTime
+  meals Meal[]
+}
+
+model Meal {
+  id String @id @default(cuid())
+  dayId String
+  day MealPlanDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  type String // BREAKFAST | LUNCH | SNACK | DINNER
+  name String
+  status String @default("PLANNED") // PLANNED | EATEN | SKIPPED
+  items MealItem[]
+}
+
+model MealItem {
+  id String @id @default(cuid())
+  mealId String
+  meal Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  foodId String
+  food Food @relation(fields: [foodId], references: [id])
+  servings Float
+}
+
+model FoodLog {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date DateTime
+  name String
+  calories Float
+  protein Float
+  carbs Float
+  fat Float
+  price Int @default(0)
+}
+
+model WeightLog {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date DateTime
+  weightKg Float
+  @@unique([userId, date])
+}
